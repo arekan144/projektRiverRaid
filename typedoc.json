@@ -1,0 +1,8 @@
+{
+    "name": "Projekt gry kulki",
+    "entryPoints": [
+        
+        "src/index.ts"
+    ],
+    "out": "docs"
+}
