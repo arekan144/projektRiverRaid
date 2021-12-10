@@ -13,11 +13,22 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    z-index: 1;
 }
-
+.testButton{
+    min-width: 25px;
+    padding: 14px;
+    border: 1px dashed grey;
+    background-color: honeydew;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: capitalize;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+}
 #canvas{
-    width: 900px;
-    height: 800px;
-    background-color: lightskyblue;
+    width: 1100px;
+    height: 1100px;
+    /* background-color: #6E9C42; */
     border: groove 10px grey;
 }

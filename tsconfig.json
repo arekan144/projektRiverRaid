@@ -8,5 +8,9 @@
         "jsx": "react",
         "allowJs": true,
         "emitDecoratorMetadata": true
-    }
+    },
+    "include": [
+        "src",
+        "index.ts"
+    ] /// <-- Like this!!
 }
