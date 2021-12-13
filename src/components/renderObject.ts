@@ -13,6 +13,7 @@ export default class renderObject {
     public update: Function = () => { };
     public standard_update: Function;
     public check: Function = () => { return false };
+    public time: number;
 
     constructor() { }
 }

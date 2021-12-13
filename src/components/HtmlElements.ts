@@ -3,11 +3,11 @@ import TestButton from "./TestButton";
 export default class HtmlElements {
     public canvas: HTMLCanvasElement;
     public imgs: Array<HTMLImageElement> = [];
+    public adis: Array<HTMLAudioElement> = [];
     public startGame: Function;
     sA: () => void;
 
     constructor(private root: HTMLElement) {
-
         this.initCanvas();
     }
     private initCanvas = async () => {
@@ -18,9 +18,29 @@ export default class HtmlElements {
         this.canvas.height = 1100
         this.root.appendChild(this.canvas);
         await this.createImages()
+        await this.createAudio()
         this.initMenu();
     }
-
+    private createAudio = async () => {
+        let divAduio = document.createElement('div');
+        divAduio.id = "bast"
+        let toLoad = [
+            'pew.mp3'
+        ]
+        // console.log(new Date().getMilliseconds())
+        for (let x = 0; x < toLoad.length; x++)
+            this.adis.push(await this.awaitAudio(toLoad[x]))
+        // let img = await this.awaitImage(toLoad[0])
+        // console.log(new Date().getMilliseconds())
+        console.log(this.adis)
+        // divImages.style.zIndex = '-1';
+        divAduio.style.display = 'none'
+        for (let x = 0; x < toLoad.length; x++)
+            divAduio.append(this.adis[x])
+        console.log(divAduio)
+        document.body.append(divAduio)
+        return true;
+    }
     private createImages = async () => {
         let divImages = document.createElement('div');
         divImages.id = "assets"
@@ -53,6 +73,7 @@ export default class HtmlElements {
         menu.style.backgroundColor = 'orange';
         menu.style.position = 'absolute'
         let extension = (): void => {
+            
             menu.remove();
             this.sA();
             setTimeout(() => {
@@ -69,6 +90,14 @@ export default class HtmlElements {
         //     menu.style.backgroundColor = 'orange'
         // }
         this.root.append(menu)
+    }
+    private awaitAudio = async (src: string): Promise<HTMLAudioElement> => {
+        let audio = new Audio();
+        audio.src = "./mus/" + src;
+        audio.title = src;
+        return new Promise((resolve, reject) => {
+            resolve(audio)
+        })
     }
     private awaitImage = async (src: string): Promise<HTMLImageElement> => {
         let img = new Image()
