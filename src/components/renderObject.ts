@@ -14,6 +14,7 @@ export default class renderObject {
     public standard_update: Function;
     public check: Function = () => { return false };
     public time: number;
-
+    public blok: number;
+    zm: boolean;
     constructor() { }
 }

@@ -1,17 +1,17 @@
 import Enemy from "./Enemy";
 import { poz } from "./interf/poz";
-export class Helicopter extends Enemy {
+export class Plane extends Enemy {
     constructor(public time: number, poz: poz, public direction: number) {
         super();
         this.poz = poz;
-        this.wit = { x: 80, y: 50 }
+        this.wit = { x: 80, y: 30 }
         this.sprite = [
-            { x: 15, y: 230 }, { x: 80, y: 50 },
-            { x: 105, y: 230 },
+            { x: 190, y: 235 }, { x: 90, y: 60 },
         ]
+        this.direction = Math.floor(Math.random() * -2) - 1;
         this.speed = 0;
-        this.type = 2;
-        this.zm = true;
+        this.type = 4;
+
     }
     public update = () => {
         this.standard_update();

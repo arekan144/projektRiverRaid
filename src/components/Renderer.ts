@@ -11,6 +11,8 @@ import { Helicopter } from "./Helicopter";
 import { Boat } from "./Boat";
 import { Brigde } from "./Brigde";
 import Road from "./Road";
+import { Plane } from "./Plane";
+import { Fuel } from "./Fuel";
 
 // import * as img from './gfx/logo.png';
 export default class Render {
@@ -22,7 +24,7 @@ export default class Render {
     private player: player;
     private ent: Array<renderObject> = [];
     private curr_y = 0;
-
+    private points = 0;
     constructor(private canvas: HTMLCanvasElement, private assets: HTMLImageElement[], private audio: HTMLAudioElement[]) {
         this.ctx = this.canvas.getContext('2d');
         this.control = new Control();
@@ -49,29 +51,39 @@ export default class Render {
     }
     private randomEnemies = (y: number = 0) => {
         // console.log(this.curr_y % 900)
-        let taken: number[] = [67, 90, 127, 19, 161, 59, 83, 13, 105, 50]
-        for (let x = 0; x < 10; x++) {
-            let d = Math.floor(Math.random() * 2) + 2;
+        let taken: number[] = [90, 127, 19, 161, 59, 83, 13,]
+        for (let x = 0; x < taken.length; x++) {
+            let d = Math.floor(Math.random() * 3) + 2;
             let g = taken[x]
             let z = variables.game.level[g % variables.game.level.length][0][0] + 25
-            console.log(variables.game.level[g % variables.game.level.length][0][0])
+            // console.log(variables.game.level[g % variables.game.level.length][0][0])
             switch (d) {
                 case 2:
                     // console.log(g % variables.game.level.length, variables.game.level[g % variables.game.level.length][0])
                     // variables.game.level[g % variables.game.level.length][0][0]
-
-                    this.ent.push(new Helicopter(0, { x: z, y: -g * this.blockHeight + y - 150 }, 1))
+                    this.ent.push(new Helicopter(Math.floor(Math.random() * 100), { x: z, y: -g * this.blockHeight + y - 150 }, 1))
+                    this.ent[this.ent.length - 1].blok = g;
                     break;
                 case 3:
-
-                    this.ent.push(new Boat(0, { x: z, y: -g * this.blockHeight + y - 150 }, 1))
+                    this.ent.push(new Boat(Math.floor(Math.random() * 400), { x: z, y: -g * this.blockHeight + y - 150 }, 1))
+                    this.ent[this.ent.length - 1].blok = g;
                     break;
-                case 4: break;
-                case 5: break;
-                case 6: break;
+                case 4:
+                    this.ent.push(new Plane(0, { x: z, y: -g * this.blockHeight + y - 150 }, 1))
+                    // this.ent[this.ent.length - 1].blok = g;
+                    break;
+
             }
+            //105
+
         }
-        console.log(taken)
+        // if (Math.floor(Math.random() * 4) != 3)
+        this.ent.push(new Fuel({ x: 70, y: -1150 + y - 150 }, 1));
+        // if (Math.floor(Math.random() * 4) != 3)
+        this.ent.push(new Fuel({ x: 790, y: -650 + y - 150 }, 1));
+        this.ent.push(new Helicopter(0, { x: 780, y: -105 * this.blockHeight + y - 150 }, -2))
+        this.ent[this.ent.length - 1].blok = 105;
+        // console.log(taken)
     }
     private started: Array<number> = [];
     public startGame = (): boolean => {
@@ -93,8 +105,9 @@ export default class Render {
     }
 
     private kill_player = () => {
-        this.plb = -1;
+        // this.plb = -1;
         this.player.dead = true;
+        // this.player.score 
         this.player.dir = 3;
         this.drawBackground();
         this.drawPlayer();
@@ -116,8 +129,10 @@ export default class Render {
             // console.log(this.player, def_player)
             // variables.game.start = false;
             let lifes = this.player.life
+            let score = this.player.score
             this.player = new def_player();
             this.player.life = lifes - 1;
+            this.player.score = score;
             this.ctx.clearRect(0, 0, this.width, this.height)
             if (lifes == 0) {
                 let ev = new Event('men');
@@ -161,7 +176,7 @@ export default class Render {
         this.ctx.closePath();
     }
     private drawn = false;
-    private plb = 0;
+    // private plb = 0;
     private drawBackground = () => {
         this.ctx.fillStyle = "#6E9C42";
         this.ctx.fillRect(0, 0, this.width, 879);
@@ -192,7 +207,7 @@ export default class Render {
                 this.drawn = false;
             }, 1000)
 
-            console.log(this.plb % this.blockHeight)
+            // console.log(this.plb % this.blockHeight)
             this.ent.push(new Road(0, 0), new Brigde(), new Road((1100 + 315) / 2, 0))
             this.randomEnemies();
 
@@ -201,8 +216,20 @@ export default class Render {
         // console.log(blok)
         // this.ctx.fill();
     }
-
+    private numbers: poz[] = [
+        { x: 980, y: 480 }, //0, sz 60x40
+        { x: 420, y: 480 }, //1
+        { x: 490, y: 480 },
+        { x: 560, y: 480 },
+        { x: 630, y: 480 },
+        { x: 560, y: 480 },
+        { x: 700, y: 480 },
+        { x: 770, y: 480 },
+        { x: 840, y: 480 },
+        { x: 910, y: 480 },
+    ]
     private drawHud = () => {
+
         this.ctx.beginPath()
         this.ctx.rect(0, 880, this.width, this.height - 880);
         this.ctx.stroke();
@@ -211,14 +238,25 @@ export default class Render {
         this.ctx.fillStyle = "#ffffff"
         this.ctx.closePath();
         this.drawObject({ x: 355, y: 980 }, { x: 370, y: 330 }, { x: 390, y: 75 }, 1);
+        let d = this.player.score.toString();
+        let x = 680;
+        this.ctx.beginPath();
+        this.ctx.rect(680, 910, 60, 40)
+        this.ctx.fill();
+        this.ctx.closePath();
+        for (let z = d.length - 1; z >= 0; z--) {
+            // console.log(eval(d[z]), d[z], this.player.score)
+            this.drawObject({ x: x, y: 910 }, this.numbers[eval(d[z])], { x: 60, y: 40 }, 1)
+            x -= 65;
+        }
         // this.drawObject({ x: 0, y: 580 }, )
     }
 
     private drawObject = (poz: poz, what: poz = { x: 0, y: 0 }, wit: poz = { x: 20, y: 20 }, direct: number) => {
-        this.ctx.beginPath();
-        this.ctx.rect(poz.x, poz.y, wit.x, wit.y);
-        this.ctx.stroke();
-        this.ctx.closePath();
+        // this.ctx.beginPath();
+        // this.ctx.rect(poz.x, poz.y, wit.x, wit.y);
+        // this.ctx.stroke();
+        // this.ctx.closePath();
         if (direct == -2) {
             this.ctx.save();
             this.ctx.scale(-1, 1);
@@ -237,7 +275,13 @@ export default class Render {
     private game_speed = 3;
     private ti = 0;
     private chFuel = () => {
-
+        this.ctx.beginPath();
+        //30
+        // console.log(Math.floor(this.player.fuel / 10))
+        this.ctx.fillStyle = 'orange'
+        this.ctx.rect(385 + 31 * this.player.fuel / 10, 1000, 20, 50)
+        this.ctx.fill();
+        this.ctx.closePath();
     }
     private refresh = (time: number) => {
         // console.log(this.started.length, variables.game);
@@ -250,7 +294,7 @@ export default class Render {
             }
         }
         if (!this.player.dead) {
-            this.chFuel();
+
             if (this.player.fuel < 0)
                 this.kill_player();
             this.player.dir = 0
@@ -314,7 +358,8 @@ export default class Render {
             }
             this.game_speed = 1
             if (keyboard.up) {
-                this.game_speed = 4;
+                this.game_speed = 3;
+                this.player.fuel -= 0.05;
             }
             if (keyboard.space && !this.control.coolDown) {
                 this.control.coolDown = true;
@@ -346,39 +391,114 @@ export default class Render {
                         this.ent.splice(i, 1)
                         return 0;
                     }
-                    let id1 = el.id;
-                    // console.log('1', el.poz, el.wit)
-                    let toCheck = [...this.ent];
-                    // console.log(el.poz, el.wit)
-                    toCheck.splice(i, 1);
+                    for (let y = 0; y < 6; y++) {
 
-                    for (let x = 0; x < toCheck.length; x++) {
-                        if (toCheck[x].type > 1 && toCheck[x].check(el.poz, el.wit)) {
-                            let ind = this.ent.findIndex(el => el.id == toCheck[x].id)
-                            // toCheck[x].check(el.poz, el.wit);
-                            // console.log(ind)
-                            this.ent.splice(ind, 1)
-                            let in1 = this.ent.findIndex(el => id1 == el.id)
-                            this.ent.splice(in1, 1);
-                            return 0;
+                        let id1 = el.id;
+                        // console.log('1', el.poz, el.wit)
+                        let toCheck = [...this.ent];
+                        // console.log(el.poz, el.wit)
+                        toCheck.splice(i, 1);
+
+                        for (let x = 0; x < toCheck.length; x++) {
+                            if (toCheck[x].type > 1 && toCheck[x].check({ x: el.poz.x, y: el.poz.y - y }, el.wit)) {
+                                let ind = this.ent.findIndex(el => el.id == toCheck[x].id)
+                                // toCheck[x].check(el.poz, el.wit);
+                                // console.log(ind)
+                                this.ent.splice(ind, 1)
+                                let in1 = this.ent.findIndex(el => id1 == el.id)
+                                this.ent.splice(in1, 1);
+                                switch (toCheck[x].type) {
+                                    case 2:
+                                        this.player.score += 20;
+                                        break;
+                                    case 3:
+                                        this.player.score += 10;
+                                        break;
+                                    case 4:
+                                        this.player.score += 40;
+                                        break;
+                                    case 5:
+                                        this.player.score += 100;
+                                        break;
+                                    case 6:
+                                        this.player.score += 30;
+                                        break;
+                                }
+                                break;
+                            }
                         }
                     }
                     break;
-                case 2: case 3: case 4: case 5: case 6:
+                case 2:
+                    if (el.zm) {
+                        let z: poz = el.sprite[0];
+                        el.sprite[0] = el.sprite[2];
+                        el.sprite[2] = z;
+                        el.zm = false;
+                        setTimeout(() => el.zm = true, 200)
+                    }
+                // console.log(el.zm)
+                case 3:
                     if (el.check(this.player.poz, this.player.sprites[0][1])) {
                         this.kill_player();
                         return 0;
                     }
                     if (el.time == 0) {
+                        let chk = true;
                         if (el.direction != -2) {
-                            
+                            el.poz.x += 1;
+                            //variables.game.level[blok % variables.game.level.length][z][0]
+                            // let chk = true;
                         } else {
+                            el.poz.x += -1;
+                        }
+                        for (let z = 0; z < 3; z++)
+                            for (let x = 0; x < variables.game.level[(el.blok + z) % variables.game.level.length].length; x++) {
+                                // console.log(variables.game.level[el.blok % variables.game.level.length][x])
+                                if (variables.game.level[(el.blok + z) % variables.game.level.length][x][0] + 15 < el.poz.x
+                                    && variables.game.level[(el.blok + z) % variables.game.level.length][x][0]
+                                    + variables.game.level[(el.blok + z) % variables.game.level.length][x][1] - 40 > el.poz.x + el.wit.x
+                                ) {
+                                    chk = false;
+                                }
 
+                            }
+                        if (chk) {
+                            if (el.direction != -2)
+                                el.direction = -2;
+                            else
+                                el.direction = 1;
                         }
                     } else el.time--;
+                case 4:
+                    if (el.type == 4) {
+                        if (el.direction == -2)
+                            el.poz.x += -4;
+                        else
+                            el.poz.x += 4
+                        if (el.poz.x > 1130)
+                            el.poz.x = -30;
+                        if (el.poz.x < -40) {
+                            el.poz.x = 1120;
+                        }
+                    }
                     if (el.poz.y > 900) {
                         this.ent.splice(i, 1)
                         return 0;
+                    }
+                case 5:
+                    if (el.check(this.player.poz, this.player.sprites[0][1])) {
+                        this.kill_player();
+                        return 0;
+                    }
+                    el.vertical_speed = this.game_speed;
+                    break;
+                case 6:
+                    if (el.check(this.player.poz, this.player.sprites[0][1])) {
+                        if (this.player.fuel < 100)
+                            this.player.fuel += 0.55;
+                        if (this.player.fuel > 100)
+                            this.player.fuel = 100;
                     }
                     el.vertical_speed = this.game_speed;
                     break;
@@ -389,9 +509,11 @@ export default class Render {
 
         })
         // console.log(this.player.fuel)
-        this.player.fuel -= 0.01;
+        this.player.fuel -= 0.05;
         this.curr_y += this.game_speed;
         this.drawHud();
+        this.chFuel();
+        this.drawPlayer();
         if (!variables.game.pause && variables.game.start)
             window.requestAnimationFrame((t) => this.refresh(t))
 
